@@ -1,0 +1,2286 @@
+[
+    {
+        "id": "abba7bf6e29b6166",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "f0d3900cf100c2d1",
+        "type": "subflow",
+        "name": "Check User",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 140,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "ca1e9d0b11f3ff6b"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 700,
+                "y": 100,
+                "wires": [
+                    {
+                        "id": "219bb8dba06f2c8f",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#3FADB5",
+        "icon": "font-awesome/fa-user-secret"
+    },
+    {
+        "id": "e6ce508d4e1386c4",
+        "type": "subflow",
+        "name": "Has Admin",
+        "info": "",
+        "category": "",
+        "in": [
+            {
+                "x": 140,
+                "y": 140,
+                "wires": [
+                    {
+                        "id": "a7960912f9d029ff"
+                    }
+                ]
+            }
+        ],
+        "out": [
+            {
+                "x": 380,
+                "y": 120,
+                "wires": [
+                    {
+                        "id": "a7960912f9d029ff",
+                        "port": 0
+                    }
+                ]
+            }
+        ],
+        "env": [],
+        "meta": {},
+        "color": "#FFAAAA",
+        "icon": "font-awesome/fa-diamond"
+    },
+    {
+        "id": "2c544d802faa98e7",
+        "type": "mongodb4-client",
+        "name": "TODO DB",
+        "protocol": "mongodb",
+        "hostname": "localhost",
+        "port": "27017",
+        "dbName": "todo",
+        "authSource": "",
+        "authMechanism": "DEFAULT",
+        "tls": false,
+        "tlsCAFile": "",
+        "tlsInsecure": false,
+        "uri": "",
+        "advanced": "",
+        "uriTabActive": "tab-uri-simple"
+    },
+    {
+        "id": "9424de2f14b042d6",
+        "type": "jwt verify",
+        "z": "f0d3900cf100c2d1",
+        "name": "",
+        "alg": [
+            "HS256"
+        ],
+        "jwkurl": "",
+        "secret": "123456",
+        "key": "",
+        "signvar": "token",
+        "storetoken": "token",
+        "x": 410,
+        "y": 120,
+        "wires": [
+            [
+                "219bb8dba06f2c8f"
+            ]
+        ]
+    },
+    {
+        "id": "219bb8dba06f2c8f",
+        "type": "function",
+        "z": "f0d3900cf100c2d1",
+        "name": "function 4",
+        "func": "if(!msg.token || msg.token.ip !== msg.req.ip) {\n    return [null, msg]\n}\n\nmsg.user = msg.token\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 580,
+        "y": 120,
+        "wires": [
+            [],
+            [
+                "95c28d46c2591320"
+            ]
+        ]
+    },
+    {
+        "id": "ca1e9d0b11f3ff6b",
+        "type": "function",
+        "z": "f0d3900cf100c2d1",
+        "name": "function 5",
+        "func": "msg.token = msg.req.cookies.token || \"\"\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 240,
+        "y": 120,
+        "wires": [
+            [
+                "9424de2f14b042d6"
+            ]
+        ]
+    },
+    {
+        "id": "5abe4649363d46dd",
+        "type": "catch",
+        "z": "f0d3900cf100c2d1",
+        "name": "",
+        "scope": [
+            "9424de2f14b042d6"
+        ],
+        "uncaught": false,
+        "x": 430,
+        "y": 160,
+        "wires": [
+            [
+                "219bb8dba06f2c8f"
+            ]
+        ]
+    },
+    {
+        "id": "95c28d46c2591320",
+        "type": "http response",
+        "z": "f0d3900cf100c2d1",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/login"
+        },
+        "x": 740,
+        "y": 140,
+        "wires": []
+    },
+    {
+        "id": "a7960912f9d029ff",
+        "type": "function",
+        "z": "e6ce508d4e1386c4",
+        "name": "function 7",
+        "func": "if(msg.user && msg.user.roles && msg.user.roles.includes(\"admin\")) return msg\n\nreturn [null, msg];",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 140,
+        "wires": [
+            [],
+            [
+                "cd23145c62f2779d"
+            ]
+        ]
+    },
+    {
+        "id": "cd23145c62f2779d",
+        "type": "http response",
+        "z": "e6ce508d4e1386c4",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/login"
+        },
+        "x": 420,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "fbf7fc6ac617eac6",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 180,
+        "wires": [
+            [
+                "96704cf60547a702"
+            ]
+        ]
+    },
+    {
+        "id": "87c409a2f2048576",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 910,
+        "y": 180,
+        "wires": []
+    },
+    {
+        "id": "6b1bcf59563c6191",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Yapılacaklar Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n</head>\n\n<body>\n    <div class=\"container\" style=\"margin-top: 5rem\">\n        <div class=\"row\">\n            <div class=\"col-md-8 offset-md-2\">\n                {{#error}}\n                <div class=\"alert alert-danger\">\n                    <h4>{{message}}</h4>\n                </div>\n                {{/error}}\n                <form action=\"/opt/add\" method=\"POST\">\n                    <div class=\"input-group input-group-lg\">\n                        <input required type=\"text\" name=\"name\" class=\"form-control {{#error}}border-danger{{/error}}\" placeholder=\"Görev İsmi\">\n                        <button class=\"btn btn-outline-secondary\" type=\"reset\">Temizle</button>\n                        <button class=\"btn btn-primary px-5\" type=\"submit\">Ekle</button>\n                    </div>\n                </form>\n                <div class=\"card mt-2 overflow-hidden\">\n                    <div class=\"card-body p-0\">\n                        <div class=\"table-responsive\">\n                            <table class=\"table table-hover m-0\">\n                                <thead class=\"table-dark\">\n                                    <tr>\n                                        <th colspan=\"2\">Görev</th>\n                                    </tr>\n                                </thead>\n                                <tbody>\n                                    {{#payload}}\n                                    <tr valign=\"middle\">\n                                        <td>\n                                            {{#done}}\n                                            <h4 class=\"text-muted\"><del>{{name}}</del></h4>\n                                            {{/done}}\n                                            {{^done}}\n                                            <h4>{{name}}</h4>\n                                            {{/done}}\n                                            <div>\n                                                <span class=\"badge bg-secondary\"><small><i class=\"bi bi-calendar\"></i> {{date}} {{time}}</small></span> <span class=\"badge bg-dark\"> {{stamp.username}}</span></div>\n\n                                        </td>\n                                        <td align=\"right\">\n                                            <div class=\"btn-group\">\n                                                <form method=\"POST\">\n                                                    <input type=\"hidden\" name=\"id\" value=\"{{_id}}\"/>\n                                                {{#done}}\n                                                    <button data-bs-toggle=\"tooltip\" data-bs-title=\"Aç\" type=\"submit\" formaction=\"/opt/open\" class=\"btn btn-warning\"><i class=\"bi bi-arrow-clockwise\"></i></button>\n                                                    {{/done}}\n                                                    {{^done}}\n                                                    <a data-bs-toggle=\"tooltip\" data-bs-title=\"Düzenle\" href=\"/edit/{{_id}}\" class=\"btn btn-info\"><i class=\"bi bi-pencil-fill\"></i></a>\n                                                    <a data-bs-toggle=\"tooltip\" data-bs-title=\"Hatırlatıcı\" href=\"/schedule/{{_id}}\" class=\"btn btn-secondary\"><i class=\"bi bi-alarm-fill\"></i></a>\n                                                    <button data-bs-toggle=\"tooltip\" data-bs-title=\"Tamamla\" type=\"submit\" formaction=\"/opt/complete\" class=\"btn btn-success\"><i class=\"bi bi-check-lg\"></i></button>\n                                                    {{/done}}\n                                                    <button data-bs-toggle=\"tooltip\" data-bs-title=\"Sil\" type=\"submit\" formaction=\"/opt/trash\" class=\"btn btn-danger\"><i class=\"bi bi-trash2-fill\"></i></button>\n                                                </form>\n                                            </div>\n                                        </td>\n                                    </tr>\n                                    {{/payload}}\n                                    {{^payload}}\n                                    <tr>\n                                        <td colspan=\"2\" class=\"text-muted text-center\">Henüz hiç giriş yapılmadı...</td>\n                                    </tr>\n                                    {{/payload}}\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </div>\n    {{#hasAdmin}}\n    <div class=\"position-relative\"> \n        <a href=\"/user-list\" class=\"btn btn-danger btn-lg position-fixed bottom-0 end-0 m-5 shadow\"><i class=\"bi bi-person-fill\"></i></a>\n    </div>\n    {{/hasAdmin}}\n    <div class=\"position-relative\">\n        <div class=\"btn-group position-fixed top-0 end-0 m-2 shadow\">\n            <button class=\"btn btn-light\">{{user.displayName}} | {{user.username}}</button>\n            <a href=\"/logout\" class=\"btn btn-danger btn-lg\"><i class=\"bi bi-power\"></i></a>\n        </div>\n    </div>\n    <script src=\"/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]')\n        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))\n    </script>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 760,
+        "y": 180,
+        "wires": [
+            [
+                "87c409a2f2048576"
+            ]
+        ]
+    },
+    {
+        "id": "c46024052af4daeb",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.todo.find()",
+        "func": "let query = msg.user.roles.includes(\"admin\") ? {} : {\n    \"stamp.username\": msg.user.username\n}\nmsg.payload = [[\n    {\n        $match: query\n    },\n    {\n        $sort: {\n            \"stamp.createdAt\": -1\n        }\n    }\n]]\n\nmsg.hasAdmin = msg.user.roles.includes(\"admin\")\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 450,
+        "y": 180,
+        "wires": [
+            [
+                "c98297ac2255bd14"
+            ]
+        ]
+    },
+    {
+        "id": "73e6180d112e7e54",
+        "type": "link in",
+        "z": "abba7bf6e29b6166",
+        "name": "link in 1",
+        "links": [
+            "7c4c185aa302a1fe",
+            "3c8d36e2ad30af6a",
+            "932198c039953859",
+            "decf4a527c9f85db",
+            "fd1822284bcceaaa",
+            "ba4ef6b938761731",
+            "477e1c3b889d302a",
+            "1e2851ee92749943",
+            "b6ea02a042c1970b",
+            "93da13d1f4bf8b74",
+            "afd06b249ddc66d3",
+            "35ecd632839889a0",
+            "1b48b5e03d7fe713",
+            "3aaf54ff2c400651"
+        ],
+        "x": 145,
+        "y": 140,
+        "wires": [
+            [
+                "96704cf60547a702"
+            ]
+        ]
+    },
+    {
+        "id": "79cbd5238e7ebac3",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/opt/:type",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 100,
+        "y": 400,
+        "wires": [
+            [
+                "f4d768e4636cd523"
+            ]
+        ]
+    },
+    {
+        "id": "deb270ac729e057e",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "validation",
+        "func": "const typeLookup = {\n    trash: {\n        text: \"Silmek\",\n        requireArgs: [\"id\"]\n    },\n    complete: {\n        text: \"Tamamlamak\",\n        requireArgs: [\"id\"]\n    },\n    open: {\n        text: \"Açmak\",\n        requireArgs: [\"id\"]\n    },\n    add: {\n        text: \"Eklemek\",\n        requireArgs: [\"name\"]\n    },\n    update: {\n        text: \"Güncellemek\",\n        requireArgs: [\"id\", \"name\"]\n    },\n    schedule: {\n        text: \"Hatırlatma Kurmak\",\n        requireArgs: [\"id\"]\n    }\n}\n\nif (!Object.keys(typeLookup).includes(msg.req.params.type)) {\n    msg.error = {\n        message: `${msg.req.params.type} geçersiz bir parametre değeridir.`\n    }\n    return [null, msg]\n}\n\nif (!typeLookup[msg.req.params.type].requireArgs.every(arg => msg.payload[arg])) {\n    msg.error = {\n        message: `${typeLookup[msg.req.params.type].text} istediğiniz elemanın ${typeLookup[msg.req.params.type].requireArgs} bilgisi(leri) olmalı.`\n    }\n    return [null, msg]\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 440,
+        "y": 400,
+        "wires": [
+            [
+                "f5ff2c6d900e8746"
+            ],
+            [
+                "1e2851ee92749943"
+            ]
+        ],
+        "outputLabels": [
+            "Valid",
+            "Invalid"
+        ]
+    },
+    {
+        "id": "f5ff2c6d900e8746",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.todo.opt()",
+        "func": "const date = new Date()\nconst now = date.getTime()\nmsg.formData = msg.payload\n\nif (msg.req.params.type === \"add\") {\n    msg.payload = {\n        id: now,\n        name: msg.formData.name,\n        done: false,\n        stamp: {\n            createdAt: now,\n            ip: msg.req.ip,\n            username: msg.user.username || \"\",\n            email: msg.user.email || \"\"\n        },\n        date: date.toLocaleDateString(\"TR\"), // DD.AA.YYYY\n        time: date.toLocaleTimeString(\"TR\") // SS:DD:NN\n    }\n    return msg\n}\n\nmsg.payload = [{\n    _id: msg.formData.id\n}]\n\nreturn [null, msg]",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 610,
+        "y": 400,
+        "wires": [
+            [
+                "e6118fd633c441d3"
+            ],
+            [
+                "94ebc34b2dc1743a"
+            ]
+        ],
+        "outputLabels": [
+            "Succ",
+            "Err"
+        ]
+    },
+    {
+        "id": "1e2851ee92749943",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 8",
+        "mode": "link",
+        "links": [
+            "73e6180d112e7e54",
+            "11428542993715c4"
+        ],
+        "x": 555,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "488c01fef752eb02",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/"
+        },
+        "x": 940,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "9e01fe44c18931b1",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/edit/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "ab92221a4eee442f"
+            ]
+        ]
+    },
+    {
+        "id": "538e8cd1d63357e9",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.todo.findOne()",
+        "func": "msg.payload = [{\n    _id: msg.req.params.id\n}]\n\nif (!msg.user.roles.includes(\"admin\")) msg.payload[\"stamp.username\"] = msg.user.username\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 490,
+        "y": 240,
+        "wires": [
+            [
+                "a36ac1c4dbca6ac2"
+            ]
+        ],
+        "outputLabels": [
+            "Succ"
+        ]
+    },
+    {
+        "id": "f80e60a48a56e1af",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Yapılacaklar Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n</head>\n\n<body>\n    <div class=\"container mt-5\">\n        <div class=\"row\">\n            <div class=\"col-md-8 offset-md-2\">\n                {{#error}}\n                <div class=\"alert alert-danger\">\n                    <h4>{{message}}</h4>\n                </div>\n                {{/error}}\n                <form action=\"/opt/update\" method=\"POST\">\n                    <input type=\"hidden\" name=\"id\" value=\"{{payload._id}}\"/>\n                    <div class=\"mb-3\">\n                        <input required type=\"text\" name=\"name\" value=\"{{payload.name}}\" class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\" placeholder=\"Görev İsmi\">\n                    </div>\n                    <div class=\"mb-3 float-end\">\n                        <a class=\"btn btn-warning\" href=\"/\">Vazgeç</a>\n                        <button class=\"btn btn-outline-secondary\" type=\"reset\">Temizle</button>\n                        <button class=\"btn btn-success px-5\" type=\"submit\">Güncelle</button>\n                    </div>\n                </form>\n            </div>\n        </div>\n    </div>\n    <script src=\"/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]')\n        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))\n    </script>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 1000,
+        "y": 220,
+        "wires": [
+            [
+                "27e2e6219bf0b171"
+            ]
+        ]
+    },
+    {
+        "id": "93da13d1f4bf8b74",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 10",
+        "mode": "link",
+        "links": [
+            "73e6180d112e7e54",
+            "11428542993715c4"
+        ],
+        "x": 955,
+        "y": 260,
+        "wires": []
+    },
+    {
+        "id": "27e2e6219bf0b171",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1150,
+        "y": 220,
+        "wires": []
+    },
+    {
+        "id": "48e084d9ee8ac25b",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/schedule/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 320,
+        "wires": [
+            [
+                "760fbfe144976eda"
+            ]
+        ]
+    },
+    {
+        "id": "5ea77aadfb907306",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.todo.findOne()",
+        "func": "msg.payload = [{\n    _id: msg.req.params.id\n}]\n\nif (!msg.user.roles.includes(\"admin\")) msg.payload[\"stamp.username\"] = msg.user.username\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 510,
+        "y": 320,
+        "wires": [
+            [
+                "4af9c382b354b02c"
+            ]
+        ],
+        "outputLabels": [
+            "Succ"
+        ]
+    },
+    {
+        "id": "1070a816ecfad4f2",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Yapılacaklar Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n</head>\n\n<body>\n    <div class=\"container mt-5\">\n        <div class=\"row\">\n            <div class=\"col-md-8 offset-md-2\">\n                {{#error}}\n                <div class=\"alert alert-danger\">\n                    <h4>{{message}}</h4>\n                </div>\n                {{/error}}\n                <form action=\"/opt/schedule\" method=\"POST\">\n                    <input type=\"hidden\" name=\"id\" value=\"{{payload._id}}\"/>\n                    <div class=\"mb-3\">\n                        <input required type=\"datetime-local\" name=\"datetime\" value=\"{{payload.schedule.formData.datetime}}\" class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\" placeholder=\"gg.aa.yyyy ss:dd\">\n                    </div>\n                    <div class=\"mb-3 float-end\">\n                        <a class=\"btn btn-warning\" href=\"/\">Vazgeç</a>\n                        <button class=\"btn btn-outline-secondary\" type=\"reset\">Temizle</button>\n                        <button class=\"btn btn-success px-5\" type=\"submit\">Planla</button>\n                    </div>\n                </form>\n            </div>\n        </div>\n    </div>\n    <script src=\"/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]')\n        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))\n    </script>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 1020,
+        "y": 300,
+        "wires": [
+            [
+                "67fdf42f2ea79e0d"
+            ]
+        ]
+    },
+    {
+        "id": "67fdf42f2ea79e0d",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1150,
+        "y": 300,
+        "wires": []
+    },
+    {
+        "id": "d08ab8c5bbe8733c",
+        "type": "inject",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 100,
+        "wires": [
+            [
+                "03d72eed1fce11ee"
+            ]
+        ]
+    },
+    {
+        "id": "551b2c5d3a1f0882",
+        "type": "e-mail",
+        "z": "abba7bf6e29b6166",
+        "server": "smtp.gmail.com",
+        "port": "465",
+        "authtype": "BASIC",
+        "saslformat": false,
+        "token": "oauth2Response.access_token",
+        "secure": true,
+        "tls": true,
+        "name": "",
+        "dname": "email",
+        "x": 1390,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "6a0c90edd273d90e",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<p>Merhaba {{todo.stamp.displayName}},</p>\n<p></p>\n{{todo.name}} işiniz için hatırlamak istiyoruz :)\n<p></p>\n<p>Bilginize.</p>",
+        "output": "str",
+        "x": 1240,
+        "y": 500,
+        "wires": [
+            [
+                "551b2c5d3a1f0882"
+            ]
+        ]
+    },
+    {
+        "id": "ad3455c62a3134a8",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "header",
+        "func": "if (msg.schedule) {\n    msg.payload = [\n        {\n            _id: msg.formData.id\n        },\n        {\n            $set: {\n                schedule: msg.response\n            }\n        }\n    ]\n    return [null, msg]\n}\n\nmsg.from = \"noreply <noreply@todo.com\"\nmsg.to = \"l.sencer.sahin@gmail.com\"\nreturn msg;",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1080,
+        "y": 500,
+        "wires": [
+            [
+                "6a0c90edd273d90e"
+            ],
+            [
+                "d68e45ae84c95dde"
+            ]
+        ]
+    },
+    {
+        "id": "135fd5ced51e9d69",
+        "type": "link in",
+        "z": "abba7bf6e29b6166",
+        "name": "link in 2",
+        "links": [
+            "162d04391b6ca28e",
+            "7eac2024a33666ac"
+        ],
+        "x": 795,
+        "y": 560,
+        "wires": [
+            [
+                "6fccfc3a32316d43",
+                "8cf167d43393a9b2"
+            ]
+        ]
+    },
+    {
+        "id": "162d04391b6ca28e",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 12",
+        "mode": "link",
+        "links": [
+            "135fd5ced51e9d69",
+            "9d681c989b623179"
+        ],
+        "x": 865,
+        "y": 100,
+        "wires": []
+    },
+    {
+        "id": "7878aa68dd9475e4",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/user-list",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 130,
+        "y": 620,
+        "wires": [
+            [
+                "8f2dad563783d5f7"
+            ]
+        ]
+    },
+    {
+        "id": "0454db004f53273f",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1130,
+        "y": 620,
+        "wires": []
+    },
+    {
+        "id": "b8dae339004d169c",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Kullanıcı Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n</head>\n\n<body>\n    <div class=\"container\" style=\"margin-top: 5rem\">\n        <div class=\"row\">\n            <div class=\"col-md-10 offset-md-1\">\n                {{#error}}\n                <div class=\"alert alert-danger\">\n                    <h4>{{message}}</h4>\n                </div>\n                {{/error}}\n                <form action=\"/user-opt/add\" method=\"POST\">\n                    <div class=\"input-group input-group-lg\">\n                        <input required type=\"text\" name=\"username\" value=\"{{error.formData.username}}\" class=\"form-control {{#error}}border-danger{{/error}}\" placeholder=\"Kullanıcı adı...\">\n                        <input required type=\"password\" name=\"password\" value=\"{{error.formData.password}}\" class=\"form-control {{#error}}border-danger{{/error}}\" placeholder=\"Parola...\">\n                        <input required type=\"email\" name=\"email\" value=\"{{error.formData.email}}\" class=\"form-control {{#error}}border-danger{{/error}}\" placeholder=\"E-Posta...\">\n                        <button class=\"btn btn-outline-secondary\" type=\"reset\">Temizle</button>\n                        <button class=\"btn btn-primary px-5\" type=\"submit\">Ekle</button>\n                    </div>\n                </form>\n                <div class=\"card mt-2 overflow-hidden\">\n                    <div class=\"card-body p-0\">\n                        <div class=\"table-responsive\">\n                            <table class=\"table table-hover m-0\">\n                                <thead class=\"table-dark\">\n                                    <tr>\n                                        <th>Kullanıcı Adı</th>\n                                        <th>İsim Soyisim</th>\n                                        <th>E-Posta</th>\n                                        <th></th>\n                                    </tr>\n                                </thead>\n                                <tbody>\n                                    {{#payload}}\n                                    <tr valign=\"middle\">\n                                        <td>\n                                            {{#active}}\n                                            <h4>{{#hasAdmin}}<i class=\"bi bi-incognito\"></i>{{/hasAdmin}} {{username}}</h4>\n                                            {{/active}}\n                                            {{^active}}\n                                            <h4 class=\"text-muted\"><del>{{#hasAdmin}}<i class=\"bi bi-incognito\"></i>{{/hasAdmin}} {{username}}</del></h4>\n                                            {{/active}}\n                                            <div class=\"badge bg-secondary\">\n                                                <small><i class=\"bi bi-calendar\"></i> {{date}} {{time}}</small>\n                                            </div>\n                                        </td>\n                                        <td>{{displayName}}</td>\n                                        <td>{{email}}</td>\n                                        <td align=\"right\">\n                                            <div class=\"btn-group\">\n                                                <a data-bs-toggle=\"tooltip\" data-bs-title=\"Düzenle\" href=\"/user-edit/{{_id}}\"\n                                                    class=\"btn btn-info\"><i class=\"bi bi-pencil-fill\"></i></a>\n                                            </div>\n                                        </td>\n                                    </tr>\n                                    {{/payload}}\n                                    {{^payload}}\n                                    <tr>\n                                        <td colspan=\"2\" class=\"text-muted text-center\">Henüz hiç kullanıcı tanımlanmadı...</td>\n                                    </tr>\n                                    {{/payload}}\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n\n            </div>\n        </div>\n    </div>\n    <div class=\"position-relative\">\n        <a href=\"/\"\n            class=\"btn btn-warning btn-lg position-fixed bottom-0 end-0 m-5 shadow\"><i class=\"bi bi-card-checklist\"></i></a>\n    </div>\n    <div class=\"position-relative\">\n        <div class=\"btn-group position-fixed top-0 end-0 m-2 shadow\">\n            <button class=\"btn btn-light\">{{user.displayName}} | {{user.username}}</button>\n            <a href=\"/logout\" class=\"btn btn-danger btn-lg\"><i class=\"bi bi-power\"></i></a>\n        </div>\n    </div>\n    <script src=\"/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]')\n        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))\n    </script>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 960,
+        "y": 620,
+        "wires": [
+            [
+                "0454db004f53273f"
+            ]
+        ]
+    },
+    {
+        "id": "3ad8969a0b6dadd6",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.user.find()",
+        "func": "msg.payload = [[\n    {\n        $match: {}\n    },\n    {\n        $sort: {\n            \"stamp.createdAt\": -1\n        }\n    },\n    {\n        $addFields: {\n            hasAdmin: {\n                $cond: [{ $eq: [\"$roles\", \"admin\"] }, true, false]\n            }\n        }\n    }\n]]\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 650,
+        "y": 620,
+        "wires": [
+            [
+                "58de76fb28fc56ed"
+            ]
+        ]
+    },
+    {
+        "id": "78c46b9f0019ca18",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "validation",
+        "func": "const typeLookup = {\n    add: {\n        text: \"Eklemek\",\n        requireArgs: [\"username\", \"password\", \"email\"],\n        validation: {\n            email(data, formData) { return /^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$/.test(data) }\n        }\n    },\n    update: {\n        text: \"Güncellemek\",\n        requireArgs: [\"id\", \"!username\", \"password\", \"email\", \"roles\"],\n        validation: {\n            email(data, formData) { return /^\\w+([\\.-]?\\w+)*@\\w+([\\.-]?\\w+)*(\\.\\w{2,3})+$/.test(data) }\n        }\n    }\n}\n\nif (!Object.keys(typeLookup).includes(msg.req.params.type)) {\n    msg.error = {\n        message: `${msg.req.params.type} geçersiz bir parametre değeridir.`,\n        formData: msg.formData\n    }\n    return msg.req.headers.referer.includes(\"user-edit\") ? [null, null, msg] : [null, msg]\n}\n\nlet fields = Object.keys(msg.payload)\nif (!typeLookup[msg.req.params.type].requireArgs.every(arg => {\n    return ((typeLookup[msg.req.params.type].validation && typeLookup[msg.req.params.type].validation[arg])\n        ? typeLookup[msg.req.params.type].validation[arg](msg.payload[arg], msg.payload)\n        : true) && (arg.startsWith(\"!\") ? !fields.includes(arg.substr(1)) : fields.includes(arg))\n})) {\n    msg.error = {\n        message: `${typeLookup[msg.req.params.type].text} istediğiniz elemanın ${typeLookup[msg.req.params.type].requireArgs} bilgisi(leri) olma(ma)lı.`,\n        formData: msg.formData\n    }\n    msg.referer = msg.req.headers.referer\n    return msg.req.headers.referer.includes(\"user-edit\") ? [null, null, msg] : [null, msg]\n}\n\nmsg.payload.roles = Array.isArray(msg.payload.roles) ? msg.payload.roles : [msg.payload.roles]\nmsg.formData = msg.payload\nreturn msg;",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 640,
+        "y": 720,
+        "wires": [
+            [
+                "7f7a00828499008e"
+            ],
+            [
+                "2cb5ec28fd38dd02"
+            ],
+            [
+                "1906557db225b987"
+            ]
+        ],
+        "outputLabels": [
+            "Valid",
+            "Invalid",
+            ""
+        ]
+    },
+    {
+        "id": "1bfcc6cfd025684c",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/user-opt/:type",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 110,
+        "y": 720,
+        "wires": [
+            [
+                "a4b66587cb7601e2"
+            ]
+        ]
+    },
+    {
+        "id": "a6b075eca666a716",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.user.opt()",
+        "func": "const date = new Date()\nconst now = date.getTime()\n\nif (msg.req.params.type === \"add\") {\n    msg.payload = {\n        id: now,\n        active: true,\n        stamp: {\n            createdAt: now,\n            ip: msg.req.ip,\n            username: msg.user.username || \"\",\n            email: msg.user.email || \"\"\n        },\n        roles: [\"user\"],\n        date: date.toLocaleDateString(\"TR\"), // DD.AA.YYYY\n        time: date.toLocaleTimeString(\"TR\"), // SS:DD:NN\n        ...msg.formData\n    }\n    return msg\n}\n\nmsg.payload = [{\n    _id: msg.formData.id\n}]\n\nreturn [null, msg]",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1630,
+        "y": 640,
+        "wires": [
+            [
+                "249862391a83ea01"
+            ],
+            [
+                "92e8c108afcff7bf"
+            ]
+        ],
+        "outputLabels": [
+            "Succ",
+            "Err"
+        ]
+    },
+    {
+        "id": "7bd81d8dcef7330f",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/user-list"
+        },
+        "x": 1960,
+        "y": 600,
+        "wires": []
+    },
+    {
+        "id": "4234b3f8c39ae8fb",
+        "type": "link in",
+        "z": "abba7bf6e29b6166",
+        "name": "link in 3",
+        "links": [
+            "2cb5ec28fd38dd02",
+            "1c02162ca9b220f1",
+            "e5994961ccd8f3e3",
+            "954edeca2208f83b",
+            "ed44764e4f58f19d"
+        ],
+        "x": 165,
+        "y": 580,
+        "wires": [
+            [
+                "8f2dad563783d5f7"
+            ]
+        ]
+    },
+    {
+        "id": "2cb5ec28fd38dd02",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 15",
+        "mode": "link",
+        "links": [
+            "4234b3f8c39ae8fb"
+        ],
+        "x": 755,
+        "y": 720,
+        "wires": []
+    },
+    {
+        "id": "1c02162ca9b220f1",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 16",
+        "mode": "link",
+        "links": [
+            "4234b3f8c39ae8fb"
+        ],
+        "x": 2085,
+        "y": 680,
+        "wires": []
+    },
+    {
+        "id": "8b7583553625e5ed",
+        "type": "bcrypt",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "action": "encrypt",
+        "field": "formData.password",
+        "hash": "payload",
+        "target": "formData.password",
+        "assignment": "assign",
+        "match": "match",
+        "outputs": 1,
+        "rounds": 10,
+        "x": 1450,
+        "y": 640,
+        "wires": [
+            [
+                "a6b075eca666a716"
+            ]
+        ]
+    },
+    {
+        "id": "475106247b4d9ae4",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/user-edit/:id",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 120,
+        "y": 820,
+        "wires": [
+            [
+                "3f9242eca47d2d31"
+            ]
+        ]
+    },
+    {
+        "id": "6256b4c24538ac18",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "db.user.findOne()",
+        "func": "msg.formData = msg.payload\nmsg.payload = [\n    {\n        _id: msg.formData.id || msg.req.params.id\n    },\n    {\n        projection: {\n            password: 0\n        }\n    }\n]\n\nreturn msg",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 670,
+        "y": 820,
+        "wires": [
+            [
+                "bfbb1f3528374298"
+            ]
+        ],
+        "outputLabels": [
+            "Succ"
+        ]
+    },
+    {
+        "id": "d70cda81ae97b15e",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "html",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Kullanıcı Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n</head>\n\n<body>\n    <div class=\"container mt-5\">\n        <div class=\"row\">\n            <div class=\"col-md-8 offset-md-2\">\n                {{#error}}\n                <div class=\"alert alert-danger\">\n                    <h4>{{message}}</h4>\n                </div>\n                {{/error}}\n                <form action=\"/user-opt/update\" method=\"POST\">\n                    <input type=\"hidden\" name=\"id\" value=\"{{payload._id}}\"/>\n                    <div class=\"mb-3\">\n                        <label for=\"username\" class=\"form-label\">Kullanıcı Adı</label>\n                        <div\n                            class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\">\n                            {{payload.username}}</div>\n                    </div>\n                    <div class=\"mb-3\">\n                        <label for=\"displayName\" class=\"form-label\">İsim Soyisim</label>\n                        <input type=\"text\" name=\"displayName\" value=\"{{payload.displayName}}\" class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\" placeholder=\"İsim Soyisim...\">\n                    </div>\n                    <div class=\"mb-3\">\n                        <label for=\"email\" class=\"form-label\">* E-Posta Adresi</label>\n                        <input required type=\"email\" name=\"email\" value=\"{{payload.email}}\" class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\" placeholder=\"E-Posta...\">\n                    </div>\n                    <div class=\"mb-3\">\n                        <label for=\"password\" class=\"form-label\">Parola</label>\n                        <input type=\"password\" name=\"password\" class=\"form-control form-control-lg {{#error}}border-danger{{/error}}{{^error}}border-info{{/error}}\" placeholder=\"Parola...\">\n                    </div>\n                    <div class=\"mb-3\">\n                        <div class=\"form-check form-check-inline\">\n                            <input {{#payload.active}}checked{{/payload.active}} class=\"form-check-input\" type=\"radio\" name=\"status\" id=\"active\" value=\"active\">\n                            <label class=\"form-check-label\" for=\"active\">Aktif</label>\n                        </div>\n                        <div class=\"form-check form-check-inline\">\n                            <input {{^payload.active}}checked{{/payload.active}} class=\"form-check-input\" type=\"radio\" name=\"status\" id=\"pasive\" value=\"pasive\">\n                            <label class=\"form-check-label\" for=\"pasive\">Pasif</label>\n                        </div>\n                    </div>\n                    <div class=\"mb-3\">\n                        <div class=\"form-check form-check-inline\">\n                            <input {{#hasUser}}checked{{/hasUser}} class=\"form-check-input\" type=\"checkbox\" name=\"roles\" id=\"user\" value=\"user\">\n                            <label class=\"form-check-label\" for=\"user\">Standart Kullanıcı</label>\n                        </div>\n                        <div class=\"form-check form-check-inline\">\n                            <input {{#hasAdmin}}checked{{/hasAdmin}} class=\"form-check-input\" type=\"checkbox\" name=\"roles\" id=\"admin\" value=\"admin\">\n                            <label class=\"form-check-label\" for=\"admin\">Yetkili Kullanıcı</label>\n                        </div>\n                    </div>\n                    <div class=\"mb-3 float-end\">\n                        <a class=\"btn btn-warning\" href=\"/user-list\">Vazgeç</a>\n                        <button class=\"btn btn-outline-secondary\" type=\"reset\">Temizle</button>\n                        <button class=\"btn btn-success px-5\" type=\"submit\">Güncelle</button>\n                    </div>\n                </form>\n            </div>\n        </div>\n    </div>\n    <script src=\"/js/bootstrap.bundle.min.js\"></script>\n    <script>\n        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle=\"tooltip\"]')\n        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))\n    </script>\n</body>\n\n</html>",
+        "output": "str",
+        "x": 1140,
+        "y": 800,
+        "wires": [
+            [
+                "ca4fa3b57627adc9"
+            ]
+        ]
+    },
+    {
+        "id": "ca4fa3b57627adc9",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 1270,
+        "y": 800,
+        "wires": []
+    },
+    {
+        "id": "8ba66a012fa0d648",
+        "type": "link in",
+        "z": "abba7bf6e29b6166",
+        "name": "link in 4",
+        "links": [
+            "1906557db225b987",
+            "8b52f2696a88400f"
+        ],
+        "x": 175,
+        "y": 860,
+        "wires": [
+            [
+                "3f9242eca47d2d31"
+            ]
+        ]
+    },
+    {
+        "id": "1906557db225b987",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 18",
+        "mode": "link",
+        "links": [
+            "8ba66a012fa0d648"
+        ],
+        "x": 755,
+        "y": 760,
+        "wires": []
+    },
+    {
+        "id": "666058e49dc82136",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 1",
+        "func": "if(msg.formData.password) return msg\ndelete msg.formData.password\nreturn [null, msg]",
+        "outputs": 2,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1300,
+        "y": 660,
+        "wires": [
+            [
+                "8b7583553625e5ed"
+            ],
+            [
+                "a6b075eca666a716"
+            ]
+        ]
+    },
+    {
+        "id": "e6012a2ba732f7d7",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/login",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 140,
+        "y": 1240,
+        "wires": [
+            [
+                "307c54e9db2c3e87"
+            ]
+        ]
+    },
+    {
+        "id": "30c3f85ed4d718d8",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "<!DOCTYPE html>\n<html lang=\"tr\">\n\n<head>\n    <meta charset=\"UTF-8\">\n    <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Yapılacaklar Listesi</title>\n\n    <link rel=\"stylesheet\" href=\"/css/bootstrap.min.css\">\n    <link rel=\"stylesheet\" href=\"/font/bootstrap-icons.min.css\">\n\n    <style>{{{css}}}</style>\n</head>\n\n<body>\n    <div id=\"login\">\n        <div class=\"container\">\n            <div id=\"login-row\" class=\"row justify-content-center align-items-center\">\n                <div id=\"login-column\" class=\"col-md-6\">\n                        {{#error}}\n                        <div class=\"alert alert-danger my-3 shadow\">\n                            {{message}}\n                        </div>\n                        {{/error}}\n                    <div id=\"login-box\" class=\"col-md-12 bg-light shadow\">\n                        <form id=\"login-form\" class=\"form\" action=\"login\" method=\"post\">\n                            <div class=\"form-group\">\n                                <label for=\"username\">Kullanıcı Adı:</label><br>\n                                <input required type=\"text\" name=\"username\" id=\"username\" class=\"form-control\" value=\"{{payload.username}}\">\n                            </div>\n                            <div class=\"form-group\">\n                                <label for=\"password\">Parola:</label><br>\n                                <input required type=\"password\" name=\"password\" id=\"password\" class=\"form-control\" value=\"{{payload.password}}\">\n                            </div>\n                            <div class=\"form-group\">\n                                <input type=\"submit\" name=\"submit\" class=\"btn btn-dark btn-lg mt-3 w-100\" value=\"Giriş\">\n                            </div>\n                        </form>\n                    </div>\n                </div>\n            </div>\n        </div>\n    </div>\n</body>\n</html>",
+        "output": "str",
+        "x": 440,
+        "y": 1240,
+        "wires": [
+            [
+                "22ab79631c5f227d"
+            ]
+        ]
+    },
+    {
+        "id": "22ab79631c5f227d",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "",
+        "headers": {},
+        "x": 590,
+        "y": 1240,
+        "wires": []
+    },
+    {
+        "id": "307c54e9db2c3e87",
+        "type": "template",
+        "z": "abba7bf6e29b6166",
+        "name": "css",
+        "field": "css",
+        "fieldType": "msg",
+        "format": "css",
+        "syntax": "plain",
+        "template": "#login .container #login-row #login-column #login-box {\n  margin-top: 120px;\n  max-width: 600px;\n}\n#login .container #login-row #login-column #login-box #login-form {\n  padding: 20px;\n}\n#login .container #login-row #login-column #login-box #login-form #register-link {\n  margin-top: -85px;\n}",
+        "output": "str",
+        "x": 290,
+        "y": 1240,
+        "wires": [
+            [
+                "30c3f85ed4d718d8"
+            ]
+        ]
+    },
+    {
+        "id": "3da6a74355c1a30e",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/login",
+        "method": "post",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 1340,
+        "wires": [
+            [
+                "a8813e76f607fab4"
+            ]
+        ]
+    },
+    {
+        "id": "08c65150a1b5ef5f",
+        "type": "jwt sign",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "alg": "HS256",
+        "exp": 3600,
+        "jwkurl": "",
+        "jwkkid": "",
+        "secret": "123456",
+        "key": "",
+        "signvar": "payload",
+        "storetoken": "payload",
+        "x": 1100,
+        "y": 1280,
+        "wires": [
+            [
+                "bbb0f534d4a6c360"
+            ]
+        ]
+    },
+    {
+        "id": "c8e5c94165aa1831",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 2",
+        "func": "if (!msg.match) {\n    msg.error = {\n        message: \"Kullanıcı adı ve parola hatalı.\"\n    }\n    return [null, msg]\n}\n\nmsg.payload = {\n    username: msg.user.username,\n    email: msg.user.email,\n    displayName: msg.user.displayName,\n    roles: msg.user.roles,\n    ip: msg.req.ip\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 1300,
+        "wires": [
+            [
+                "08c65150a1b5ef5f"
+            ],
+            [
+                "4a4297ec5c6b29d7"
+            ]
+        ]
+    },
+    {
+        "id": "a8813e76f607fab4",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "findUser",
+        "func": "if(!msg.payload.username || !msg.payload.password) {\n    msg.error = {\n        message: \"Kullanıcı adı ve parola doldurulmalıdır.\"\n    }\n    return [null, msg]\n}\n\nmsg.formData = msg.payload\nmsg.payload = {\n    username: msg.payload.username\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 320,
+        "y": 1340,
+        "wires": [
+            [
+                "9c98f54d52766eab"
+            ],
+            [
+                "fc4b10f416bf2d6a"
+            ]
+        ]
+    },
+    {
+        "id": "e75da13aa36cde67",
+        "type": "bcrypt",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "action": "verify",
+        "field": "formData.password",
+        "hash": "user.password",
+        "target": "payload",
+        "assignment": "replace",
+        "match": "match",
+        "outputs": 1,
+        "rounds": 10,
+        "x": 780,
+        "y": 1300,
+        "wires": [
+            [
+                "c8e5c94165aa1831"
+            ]
+        ]
+    },
+    {
+        "id": "bbb0f534d4a6c360",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 3",
+        "func": "msg.cookies = {\n    token: msg.payload\n}\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1260,
+        "y": 1280,
+        "wires": [
+            [
+                "c3f1d0dac01c0fe6"
+            ]
+        ]
+    },
+    {
+        "id": "c3f1d0dac01c0fe6",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/"
+        },
+        "x": 1420,
+        "y": 1280,
+        "wires": []
+    },
+    {
+        "id": "c879362eeddca09a",
+        "type": "link in",
+        "z": "abba7bf6e29b6166",
+        "name": "link in 5",
+        "links": [
+            "fc4b10f416bf2d6a",
+            "4a4297ec5c6b29d7",
+            "be5801b34e21f30e"
+        ],
+        "x": 175,
+        "y": 1280,
+        "wires": [
+            [
+                "307c54e9db2c3e87"
+            ]
+        ]
+    },
+    {
+        "id": "fc4b10f416bf2d6a",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 19",
+        "mode": "link",
+        "links": [
+            "c879362eeddca09a"
+        ],
+        "x": 455,
+        "y": 1360,
+        "wires": []
+    },
+    {
+        "id": "4a4297ec5c6b29d7",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 20",
+        "mode": "link",
+        "links": [
+            "c879362eeddca09a"
+        ],
+        "x": 1065,
+        "y": 1320,
+        "wires": []
+    },
+    {
+        "id": "96704cf60547a702",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 270,
+        "y": 180,
+        "wires": [
+            [
+                "c46024052af4daeb"
+            ]
+        ]
+    },
+    {
+        "id": "2c92990fa0230ed5",
+        "type": "http in",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "url": "/logout",
+        "method": "get",
+        "upload": false,
+        "swaggerDoc": "",
+        "x": 150,
+        "y": 1460,
+        "wires": [
+            [
+                "13ddc5bbf311584a"
+            ]
+        ]
+    },
+    {
+        "id": "46a02d9d1a45e104",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/login"
+        },
+        "x": 500,
+        "y": 1460,
+        "wires": []
+    },
+    {
+        "id": "13ddc5bbf311584a",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 6",
+        "func": "msg.cookies = {\n    token: null\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 330,
+        "y": 1460,
+        "wires": [
+            [
+                "46a02d9d1a45e104"
+            ]
+        ]
+    },
+    {
+        "id": "ab92221a4eee442f",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 290,
+        "y": 240,
+        "wires": [
+            [
+                "538e8cd1d63357e9"
+            ]
+        ]
+    },
+    {
+        "id": "760fbfe144976eda",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 310,
+        "y": 320,
+        "wires": [
+            [
+                "5ea77aadfb907306"
+            ]
+        ]
+    },
+    {
+        "id": "f4d768e4636cd523",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 290,
+        "y": 400,
+        "wires": [
+            [
+                "deb270ac729e057e"
+            ]
+        ]
+    },
+    {
+        "id": "8f2dad563783d5f7",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 310,
+        "y": 620,
+        "wires": [
+            [
+                "5a9bf4a300cf750b"
+            ]
+        ]
+    },
+    {
+        "id": "a4b66587cb7601e2",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 310,
+        "y": 720,
+        "wires": [
+            [
+                "f3f6d272e16cc36a"
+            ]
+        ]
+    },
+    {
+        "id": "3f9242eca47d2d31",
+        "type": "subflow:f0d3900cf100c2d1",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 310,
+        "y": 820,
+        "wires": [
+            [
+                "2e270c84ebd1c4e4"
+            ]
+        ]
+    },
+    {
+        "id": "5a9bf4a300cf750b",
+        "type": "subflow:e6ce508d4e1386c4",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 480,
+        "y": 620,
+        "wires": [
+            [
+                "3ad8969a0b6dadd6"
+            ]
+        ]
+    },
+    {
+        "id": "f3f6d272e16cc36a",
+        "type": "subflow:e6ce508d4e1386c4",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 480,
+        "y": 720,
+        "wires": [
+            [
+                "78c46b9f0019ca18"
+            ]
+        ]
+    },
+    {
+        "id": "2e270c84ebd1c4e4",
+        "type": "subflow:e6ce508d4e1386c4",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "x": 480,
+        "y": 820,
+        "wires": [
+            [
+                "6256b4c24538ac18"
+            ]
+        ]
+    },
+    {
+        "id": "aabc34143898f52a",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "insertOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 720,
+        "y": 40,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "3deef864642c8998",
+        "type": "inject",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "props": [
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "x": 130,
+        "y": 40,
+        "wires": [
+            [
+                "41cf64c28c3249c2"
+            ]
+        ]
+    },
+    {
+        "id": "2ab27887ca19b8fe",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "count",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 410,
+        "y": 40,
+        "wires": [
+            [
+                "3342bff532f15cdf"
+            ]
+        ]
+    },
+    {
+        "id": "3342bff532f15cdf",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 8",
+        "func": "if(msg.payload) return\n\nmsg.payload = {\n    \"active\": true,\n    \"roles\": [\n        \"admin\"\n    ],\n    \"username\": \"mmggmm\",\n    \"stamp\": {\n        \"createdAt\": 1,\n        \"ip\": \"127.0.0.1\",\n        \"username\": \"mmggmm\",\n        \"email\": \"hayretinmert@gmail.com\"\n    },\n    \"password\": \"$2a$10$wBVmEwdG3Ruw0nnFvnmC/e9taMYfxprAApBLHH6L4FPQv6txP.zr6\",\n    \"email\": \"hayretinmert@gmail.com\",\n    \"displayName\": \"Hayrettin Mert Gün\"\n}\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 560,
+        "y": 40,
+        "wires": [
+            [
+                "aabc34143898f52a"
+            ]
+        ]
+    },
+    {
+        "id": "41cf64c28c3249c2",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 9",
+        "func": "msg.payload = {\n    username: \"mmggmm\"\n}\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 260,
+        "y": 40,
+        "wires": [
+            [
+                "2ab27887ca19b8fe"
+            ]
+        ]
+    },
+    {
+        "id": "c98297ac2255bd14",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "aggregate",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 620,
+        "y": 180,
+        "wires": [
+            [
+                "6b1bcf59563c6191"
+            ]
+        ]
+    },
+    {
+        "id": "a36ac1c4dbca6ac2",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "findOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 680,
+        "y": 240,
+        "wires": [
+            [
+                "8d43a4032740c9a0"
+            ]
+        ]
+    },
+    {
+        "id": "8d43a4032740c9a0",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 10",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"İd ile eşleşen bir kayıt bulunamadı.\"\n    }\n    return [null, msg]\n}\n\nif (msg.payload.done) {\n    msg.error = {\n        message: \"Tamamlanan işler güncellenemez.\"\n    }\n    return [null, msg]\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 240,
+        "wires": [
+            [
+                "f80e60a48a56e1af"
+            ],
+            [
+                "93da13d1f4bf8b74"
+            ]
+        ]
+    },
+    {
+        "id": "4af9c382b354b02c",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "findOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 700,
+        "y": 320,
+        "wires": [
+            [
+                "4d8aca2e0c7e0694"
+            ]
+        ]
+    },
+    {
+        "id": "4d8aca2e0c7e0694",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 11",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"İd ile eşleşen bir kayıt bulunamadı.\"\n    }\n    return [null, msg]\n}\n\nif (msg.payload.done) {\n    msg.error = {\n        message: \"Tamamlanan işler için hatırlatma kurulamaz.\"\n    }\n    return [null, msg]\n}\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 850,
+        "y": 320,
+        "wires": [
+            [
+                "1070a816ecfad4f2"
+            ],
+            [
+                "afd06b249ddc66d3"
+            ]
+        ]
+    },
+    {
+        "id": "afd06b249ddc66d3",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 11",
+        "mode": "link",
+        "links": [
+            "73e6180d112e7e54",
+            "11428542993715c4"
+        ],
+        "x": 975,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "1789cf0c7da28a1a",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 12",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"İd ile eşleşen bir kayıt bulunamadı.\"\n    }\n    return [null, msg]\n}\n\nif (msg.payload.stamp.username !== msg.user.username && !msg.user.roles.includes(\"admin\")) {\n    msg.error = {\n        message: \"Yetkisiz erişim.\"\n    }\n    return [null, msg]\n}\n\nif (msg.req.params.type === \"update\" && msg.payload.done) {\n    msg.error = {\n        message: \"Tamamlanan işler güncellenemez.\"\n    }\n    return [null, msg]\n}\n\nmsg.todo = msg.payload\nmsg.payload = [\n    {\n        _id: msg.formData.id\n    }\n]\nconst date = new Date()\nconst now = date.getTime()\n\nif (msg.req.params.type === \"trash\") {\n    msg.operation = \"deleteOne\"\n} else if (msg.req.params.type === \"schedule\") {\n    let scheduleOptions = msg.scheduleOptions = {\n        \"crontiMethod\": \"onIntervalTime\",\n        \"crontiArgs\": [msg.formData.datetime, msg.formData.datetime]\n    }\n\n    msg.payload.push({\n        $set: {\n            schedule: {\n                formData: msg.formData,\n                options: scheduleOptions\n            }\n        }\n    })\n    msg.operation = \"updateOne\"\n} else {\n    msg.operation = \"updateOne\"\n    switch (msg.req.params.type) {\n        case \"complete\":\n            msg.payload.push({\n                $set: {\n                    done: true\n                }\n            })\n            break;\n        case \"open\":\n            msg.payload.push({\n                $set: {\n                    done: false\n                }\n            })\n            break;\n        case \"update\":\n            msg.payload.push({\n                $set: {\n                    name: msg.formData.name\n                }\n            })\n            break;\n    }\n    msg.payload[1].$set.stamp = {\n        createdAt: now,\n        ip: msg.req.ip,\n        username: msg.user.username || \"\",\n        email: msg.user.email || \"\"\n    }\n    msg.payload[1].$set.date = date.toLocaleDateString(\"TR\") // DD.AA.YYYY\n    msg.payload[1].$set.time = date.toLocaleTimeString(\"TR\") // SS:DD:NN\n}\n\nreturn msg.scheduleOptions ? [msg, null, msg] : msg;",
+        "outputs": 3,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 950,
+        "y": 440,
+        "wires": [
+            [
+                "60a70d70131a88aa"
+            ],
+            [
+                "b6ea02a042c1970b"
+            ],
+            [
+                "cea3ad115d3f9330"
+            ]
+        ]
+    },
+    {
+        "id": "b6ea02a042c1970b",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 9",
+        "mode": "link",
+        "links": [
+            "73e6180d112e7e54",
+            "11428542993715c4"
+        ],
+        "x": 1095,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "e6118fd633c441d3",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "insertOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 780,
+        "y": 380,
+        "wires": [
+            [
+                "488c01fef752eb02"
+            ]
+        ]
+    },
+    {
+        "id": "94ebc34b2dc1743a",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "findOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 780,
+        "y": 420,
+        "wires": [
+            [
+                "1789cf0c7da28a1a"
+            ]
+        ]
+    },
+    {
+        "id": "60a70d70131a88aa",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1130,
+        "y": 360,
+        "wires": [
+            [
+                "66a59255b16dd430"
+            ]
+        ]
+    },
+    {
+        "id": "66a59255b16dd430",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/"
+        },
+        "x": 1280,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "6fccfc3a32316d43",
+        "type": "crontinject",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "crontiMethod": "",
+        "crontiArgs": "[]",
+        "inputs": 1,
+        "hasButton": false,
+        "x": 920,
+        "y": 500,
+        "wires": [
+            [
+                "ad3455c62a3134a8"
+            ]
+        ]
+    },
+    {
+        "id": "cea3ad115d3f9330",
+        "type": "change",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "scheduleOptions",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 1220,
+        "y": 440,
+        "wires": [
+            [
+                "7eac2024a33666ac"
+            ]
+        ]
+    },
+    {
+        "id": "7eac2024a33666ac",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 21",
+        "mode": "link",
+        "links": [
+            "135fd5ced51e9d69",
+            "9d681c989b623179"
+        ],
+        "x": 1415,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "fe91fb30df6e82f6",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "find",
+        "output": "forEach",
+        "handleDocId": true,
+        "name": "",
+        "x": 430,
+        "y": 100,
+        "wires": [
+            [
+                "9079deae1988c12c"
+            ]
+        ]
+    },
+    {
+        "id": "03d72eed1fce11ee",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 13",
+        "func": "msg.payload = {\n    schedule: {\n        $exists: 1\n    }\n}\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 290,
+        "y": 100,
+        "wires": [
+            [
+                "fe91fb30df6e82f6"
+            ]
+        ]
+    },
+    {
+        "id": "9079deae1988c12c",
+        "type": "change",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "rules": [
+            {
+                "t": "move",
+                "p": "payload.schedule.options",
+                "pt": "msg",
+                "to": "payload",
+                "tot": "msg"
+            }
+        ],
+        "action": "",
+        "property": "",
+        "from": "",
+        "to": "",
+        "reg": false,
+        "x": 670,
+        "y": 100,
+        "wires": [
+            [
+                "162d04391b6ca28e"
+            ]
+        ]
+    },
+    {
+        "id": "d68e45ae84c95dde",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "todo",
+        "operation": "updateOne",
+        "output": "toArray",
+        "maxTimeMS": "",
+        "handleDocId": true,
+        "name": "",
+        "x": 1290,
+        "y": 540,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "8cf167d43393a9b2",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "delete schedule",
+        "func": "if (msg.todo?.schedule?.response) {\n    msg.payload = {\n        _id: msg.todo.schedule.response.self._id\n    }\n    return msg;\n}",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 940,
+        "y": 560,
+        "wires": [
+            [
+                "bc77dde33e3b16f3"
+            ]
+        ]
+    },
+    {
+        "id": "bc77dde33e3b16f3",
+        "type": "crontinject",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": false,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "",
+        "payloadType": "date",
+        "crontiMethod": "",
+        "crontiArgs": "[]",
+        "inputs": 1,
+        "hasButton": false,
+        "x": 1120,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "58de76fb28fc56ed",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "aggregate",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 820,
+        "y": 620,
+        "wires": [
+            [
+                "b8dae339004d169c"
+            ]
+        ]
+    },
+    {
+        "id": "249862391a83ea01",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "insertOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1800,
+        "y": 600,
+        "wires": [
+            [
+                "7bd81d8dcef7330f"
+            ]
+        ]
+    },
+    {
+        "id": "92e8c108afcff7bf",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "findOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 1800,
+        "y": 660,
+        "wires": [
+            [
+                "4ce0c66564041a65"
+            ]
+        ]
+    },
+    {
+        "id": "4ce0c66564041a65",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 14",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"İd ile eşleşen bir kayıt bulunamadı.\",\n        formData: msg.formData\n    }\n    return [null, msg]\n}\n\nif (msg.formData.username) {\n    msg.error = {\n        message: \"Kullanıcı adı güncellenemez.\",\n        formData: msg.formData\n    }\n    return [null, msg]\n}\n\nmsg.formData.active = msg.formData.status === \"active\"\ndelete msg.formData.status\n\nmsg.todo = msg.payload\n\nconst date = new Date()\nconst now = date.getTime()\n\nmsg.payload = [\n    {\n        _id: msg.formData.id\n    },\n    {\n        $set: {\n            ...msg.formData,\n            stamp: {\n                createdAt: now,\n                ip: msg.req.ip,\n                username: msg.user.username || \"\",\n                email: msg.user.email || \"\"\n            },\n            date: date.toLocaleDateString(\"TR\"), // DD.AA.YYYY\n            time: date.toLocaleTimeString(\"TR\") // SS:DD:NN\n        }\n    }\n]\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1970,
+        "y": 660,
+        "wires": [
+            [
+                "0ae4c969cdf3f30f"
+            ],
+            [
+                "1c02162ca9b220f1"
+            ]
+        ]
+    },
+    {
+        "id": "0ae4c969cdf3f30f",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "updateOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 2150,
+        "y": 640,
+        "wires": [
+            [
+                "53d898f79c4b2518"
+            ]
+        ]
+    },
+    {
+        "id": "53d898f79c4b2518",
+        "type": "http response",
+        "z": "abba7bf6e29b6166",
+        "name": "",
+        "statusCode": "302",
+        "headers": {
+            "location": "/user-list"
+        },
+        "x": 2300,
+        "y": 640,
+        "wires": []
+    },
+    {
+        "id": "bfbb1f3528374298",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "findOne",
+        "output": "toArray",
+        "handleDocId": true,
+        "name": "",
+        "x": 840,
+        "y": 820,
+        "wires": [
+            [
+                "0e213175a59e8bdf"
+            ]
+        ]
+    },
+    {
+        "id": "0e213175a59e8bdf",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 15",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"İd ile eşleşen bir kayıt bulunamadı.\",\n        formData: msg.formData\n    }\n    return [null, msg]\n}\n\nmsg.hasUser = msg.payload.roles.includes(\"user\")\nmsg.hasAdmin = msg.payload.roles.includes(\"admin\")\n\nmsg.payload = { ...msg.payload, ...msg.formData }\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 990,
+        "y": 820,
+        "wires": [
+            [
+                "d70cda81ae97b15e"
+            ],
+            [
+                "954edeca2208f83b"
+            ]
+        ]
+    },
+    {
+        "id": "954edeca2208f83b",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 22",
+        "mode": "link",
+        "links": [
+            "4234b3f8c39ae8fb"
+        ],
+        "x": 1105,
+        "y": 840,
+        "wires": []
+    },
+    {
+        "id": "9c98f54d52766eab",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "findOne",
+        "output": "toArray",
+        "maxTimeMS": "",
+        "handleDocId": true,
+        "name": "",
+        "x": 480,
+        "y": 1320,
+        "wires": [
+            [
+                "f967beda1f9abb92"
+            ]
+        ]
+    },
+    {
+        "id": "f967beda1f9abb92",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 16",
+        "func": "if (!msg.payload) {\n    msg.error = {\n        message: \"Kullanıcı adı veya parola hatalı.\"\n    }\n    return [null, msg]\n}\n\nmsg.user = msg.payload\n\nreturn msg;",
+        "outputs": 2,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 630,
+        "y": 1320,
+        "wires": [
+            [
+                "e75da13aa36cde67"
+            ],
+            [
+                "be5801b34e21f30e"
+            ]
+        ]
+    },
+    {
+        "id": "be5801b34e21f30e",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 23",
+        "mode": "link",
+        "links": [
+            "c879362eeddca09a"
+        ],
+        "x": 745,
+        "y": 1340,
+        "wires": []
+    },
+    {
+        "id": "7f7a00828499008e",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 17",
+        "func": "msg.payload = [{\n    _id: {\n        $ne: msg.formData.id\n    },\n    email: msg.formData.email\n}]\n\nreturn msg;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 810,
+        "y": 680,
+        "wires": [
+            [
+                "671a13fdc7d44df3"
+            ]
+        ]
+    },
+    {
+        "id": "671a13fdc7d44df3",
+        "type": "mongodb4",
+        "z": "abba7bf6e29b6166",
+        "clientNode": "2c544d802faa98e7",
+        "mode": "collection",
+        "collection": "user",
+        "operation": "count",
+        "output": "toArray",
+        "maxTimeMS": "",
+        "handleDocId": true,
+        "name": "",
+        "x": 970,
+        "y": 680,
+        "wires": [
+            [
+                "5224074442d42d54"
+            ]
+        ]
+    },
+    {
+        "id": "5224074442d42d54",
+        "type": "function",
+        "z": "abba7bf6e29b6166",
+        "name": "function 18",
+        "func": "if (msg.payload) {\n    msg.error = {\n        message: `Bu eposta adresi kullanılmaktadır.`,\n        formData: msg.formData\n    }\n    msg.payload = msg.formData\n    return msg.req.headers.referer.includes(\"user-edit\") ? [null, null, msg] : [null, msg]\n}\n\nreturn msg",
+        "outputs": 3,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1130,
+        "y": 680,
+        "wires": [
+            [
+                "666058e49dc82136"
+            ],
+            [
+                "ed44764e4f58f19d"
+            ],
+            [
+                "8b52f2696a88400f"
+            ]
+        ]
+    },
+    {
+        "id": "8b52f2696a88400f",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 25",
+        "mode": "link",
+        "links": [
+            "8ba66a012fa0d648"
+        ],
+        "x": 1265,
+        "y": 740,
+        "wires": []
+    },
+    {
+        "id": "ed44764e4f58f19d",
+        "type": "link out",
+        "z": "abba7bf6e29b6166",
+        "name": "link out 24",
+        "mode": "link",
+        "links": [
+            "4234b3f8c39ae8fb"
+        ],
+        "x": 1265,
+        "y": 700,
+        "wires": []
+    }
+]
